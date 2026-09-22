@@ -1,0 +1,1112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>GitHub Profile Analyzer</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    animation: {
+                        "float": "float 6s ease-in-out infinite",
+                        "pulse-slow": "pulse 3s ease-in-out infinite",
+                        "fade-up": "fadeUp .6s ease-out both",
+                        "spin-slow": "spin 1.5s linear infinite"
+                    },
+                    keyframes: {
+                        float: {
+                            "0%, 100%": { transform: "translateY(0)" },
+                            "50%": { transform: "translateY(-12px)" }
+                        },
+                        fadeUp: {
+                            "0%": {
+                                opacity: "0",
+                                transform: "translateY(20px)"
+                            },
+                            "100%": {
+                                opacity: "1",
+                                transform: "translateY(0)"
+                            }
+                        }
+                    }
+                }
+            }
+        };
+    </script>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: Inter, ui-sans-serif, system-ui, -apple-system,
+                BlinkMacSystemFont, "Segoe UI", sans-serif;
+            background:
+                radial-gradient(circle at 10% 10%, rgba(124, 58, 237, .20), transparent 28%),
+                radial-gradient(circle at 90% 10%, rgba(6, 182, 212, .16), transparent 25%),
+                radial-gradient(circle at 80% 90%, rgba(236, 72, 153, .12), transparent 30%),
+                #070a13;
+            min-height: 100vh;
+        }
+
+        .grid-bg {
+            background-image:
+                linear-gradient(rgba(255,255,255,.025) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,.025) 1px, transparent 1px);
+            background-size: 40px 40px;
+        }
+
+        .glass {
+            background: rgba(15, 23, 42, .68);
+            border: 1px solid rgba(255,255,255,.08);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+
+        .glass-hover {
+            transition:
+                transform .25s ease,
+                border-color .25s ease,
+                box-shadow .25s ease;
+        }
+
+        .glass-hover:hover {
+            transform: translateY(-4px);
+            border-color: rgba(129, 140, 248, .35);
+            box-shadow: 0 20px 60px rgba(0,0,0,.28);
+        }
+
+        .gradient-text {
+            background: linear-gradient(
+                90deg,
+                #a78bfa,
+                #22d3ee,
+                #f472b6
+            );
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .search-glow {
+            box-shadow:
+                0 0 0 1px rgba(129,140,248,.15),
+                0 15px 50px rgba(79,70,229,.15);
+        }
+
+        .stat-number {
+            font-variant-numeric: tabular-nums;
+        }
+
+        .progress-track {
+            background: rgba(255,255,255,.07);
+        }
+
+        .progress-bar {
+            transition: width 1s cubic-bezier(.22,1,.36,1);
+        }
+
+        .repo-card {
+            transition:
+                transform .25s ease,
+                border-color .25s ease,
+                background .25s ease;
+        }
+
+        .repo-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(34,211,238,.3);
+            background: rgba(30,41,59,.75);
+        }
+
+        .loader {
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.2);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .hidden-important {
+            display: none !important;
+        }
+
+        @media (max-width: 640px) {
+            .hero-title {
+                font-size: 2.35rem;
+                line-height: 1.05;
+            }
+        }
+    </style>
+</head>
+
+<body class="text-white grid-bg">
+
+    <!-- Background decoration -->
+    <div class="fixed inset-0 pointer-events-none overflow-hidden">
+        <div class="absolute w-72 h-72 bg-violet-600/10 rounded-full blur-3xl -top-20 -left-20"></div>
+        <div class="absolute w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl top-1/3 -right-40"></div>
+        <div class="absolute w-80 h-80 bg-pink-500/10 rounded-full blur-3xl bottom-0 left-1/3"></div>
+    </div>
+
+    <main class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+
+        <!-- NAVBAR -->
+        <nav class="flex items-center justify-between mb-12">
+
+            <div class="flex items-center gap-3">
+                <div class="w-11 h-11 rounded-2xl bg-gradient-to-br from-violet-600 to-cyan-400 flex items-center justify-center shadow-lg shadow-violet-600/20">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="white">
+                        <path d="M12 .5C5.65.5.5 5.65.5 12c0 5.08 3.29 9.39 7.86 10.91.58.1.79-.25.79-.55v-2.12c-3.2.7-3.88-1.35-3.88-1.35-.53-1.34-1.28-1.7-1.28-1.7-1.05-.72.08-.71.08-.71 1.16.08 1.77 1.19 1.77 1.19 1.03 1.76 2.7 1.25 3.36.96.1-.75.4-1.25.73-1.54-2.55-.29-5.23-1.28-5.23-5.7 0-1.26.45-2.29 1.19-3.1-.12-.29-.52-1.47.11-3.06 0 0 .97-.31 3.18 1.18a11.1 11.1 0 0 1 5.78 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.77.12 3.06.74.81 1.19 1.84 1.19 3.1 0 4.43-2.69 5.4-5.25 5.68.41.36.78 1.07.78 2.16v3.2c0 .31.21.66.8.55A11.51 11.51 0 0 0 23.5 12C23.5 5.65 18.35.5 12 .5Z"/>
+                    </svg>
+                </div>
+
+                <div>
+                    <p class="font-bold text-lg">GitScope</p>
+                    <p class="text-xs text-slate-500">GitHub Profile Analyzer</p>
+                </div>
+            </div>
+
+            <div class="hidden sm:flex items-center gap-2 text-xs text-slate-400 glass px-4 py-2 rounded-full">
+                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                GitHub API Connected
+            </div>
+        </nav>
+
+
+        <!-- HERO -->
+        <section class="text-center max-w-4xl mx-auto mb-12">
+
+            <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full glass text-xs text-slate-300 mb-6 animate-fade-up">
+                <span class="text-cyan-300">✦</span>
+                Analyze up to 500 public repositories
+            </div>
+
+            <h1 class="hero-title text-5xl md:text-7xl font-black tracking-tight mb-6 animate-fade-up">
+                Understand a
+                <span class="gradient-text">GitHub Profile</span>
+                at a glance.
+            </h1>
+
+            <p class="text-slate-400 text-base md:text-lg max-w-2xl mx-auto mb-8">
+                Explore repository statistics, stars, languages and developer
+                activity through one beautiful analytics dashboard.
+            </p>
+
+
+            <!-- SEARCH -->
+            <div class="glass search-glow rounded-3xl p-2 max-w-2xl mx-auto">
+                <div class="flex flex-col sm:flex-row gap-2">
+
+                    <div class="relative flex-1">
+                        <svg
+                            class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500"
+                            width="20"
+                            height="20"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2"
+                        >
+                            <circle cx="11" cy="11" r="7"></circle>
+                            <path d="m20 20-4-4"></path>
+                        </svg>
+
+                        <input
+                            type="text"
+                            id="username"
+                            placeholder="Enter GitHub username..."
+                            autocomplete="off"
+                            class="w-full bg-slate-950/70 border border-white/5 rounded-2xl pl-12 pr-4 py-4 text-white placeholder-slate-500 outline-none focus:border-violet-500/50 transition"
+                            onkeydown="if(event.key === 'Enter') analyzeProfile()"
+                        >
+                    </div>
+
+                    <button
+                        id="analyzeBtn"
+                        onclick="analyzeProfile()"
+                        class="px-7 py-4 rounded-2xl bg-gradient-to-r from-violet-600 via-indigo-600 to-cyan-500 hover:scale-[1.02] active:scale-[.98] transition font-bold shadow-lg shadow-indigo-600/20 flex items-center justify-center gap-2"
+                    >
+                        <span id="buttonText">Analyze</span>
+                        <span id="buttonLoader" class="loader hidden"></span>
+                    </button>
+
+                </div>
+            </div>
+
+            <p class="text-xs text-slate-600 mt-4">
+                Public GitHub data only • Maximum 500 repositories analyzed
+            </p>
+        </section>
+
+
+        <!-- ERROR -->
+        <div
+            id="error"
+            class="hidden max-w-2xl mx-auto mb-8"
+        >
+            <div class="rounded-2xl border border-red-500/20 bg-red-500/10 p-5 flex gap-4 items-start">
+                <div class="w-10 h-10 rounded-xl bg-red-500/15 flex items-center justify-center text-red-400 shrink-0">
+                    ⚠
+                </div>
+
+                <div>
+                    <p class="font-semibold text-red-300">Unable to analyze profile</p>
+                    <p id="errorText" class="text-sm text-red-300/70 mt-1"></p>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- LOADING -->
+        <div id="loading" class="hidden max-w-5xl mx-auto space-y-5">
+
+            <div class="glass rounded-3xl p-8 animate-pulse">
+                <div class="flex items-center gap-5">
+                    <div class="w-24 h-24 rounded-full bg-slate-700"></div>
+                    <div class="space-y-3 flex-1">
+                        <div class="h-5 bg-slate-700 rounded w-1/3"></div>
+                        <div class="h-4 bg-slate-700 rounded w-1/4"></div>
+                        <div class="h-3 bg-slate-700 rounded w-2/3"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="h-32 rounded-2xl bg-slate-800 animate-pulse"></div>
+                <div class="h-32 rounded-2xl bg-slate-800 animate-pulse"></div>
+                <div class="h-32 rounded-2xl bg-slate-800 animate-pulse"></div>
+                <div class="h-32 rounded-2xl bg-slate-800 animate-pulse"></div>
+            </div>
+
+        </div>
+
+
+        <!-- RESULTS -->
+        <section id="result" class="hidden max-w-7xl mx-auto">
+
+            <!-- PROFILE HEADER -->
+            <div class="glass rounded-3xl p-6 md:p-8 mb-5 overflow-hidden relative">
+
+                <div class="absolute top-0 right-0 w-72 h-72 bg-violet-600/10 rounded-full blur-3xl"></div>
+
+                <div class="relative flex flex-col md:flex-row md:items-center gap-6">
+
+                    <img
+                        id="avatar"
+                        class="w-24 h-24 md:w-28 md:h-28 rounded-3xl border border-white/10 shadow-2xl object-cover animate-float"
+                        alt="GitHub avatar"
+                    >
+
+                    <div class="flex-1">
+
+                        <div class="flex flex-wrap items-center gap-3 mb-1">
+                            <h2 id="name" class="text-2xl md:text-3xl font-black"></h2>
+
+                            <span class="px-3 py-1 rounded-full text-xs font-semibold bg-emerald-400/10 text-emerald-300 border border-emerald-400/10">
+                                Public Profile
+                            </span>
+                        </div>
+
+                        <p id="handle" class="text-violet-300 font-medium mb-3"></p>
+
+                        <p id="bio" class="text-slate-400 max-w-2xl leading-relaxed">
+                        </p>
+
+                        <div class="flex flex-wrap gap-4 mt-5 text-xs text-slate-400">
+
+                            <span id="location" class="hidden flex items-center gap-1.5"></span>
+
+                            <span id="company" class="hidden flex items-center gap-1.5"></span>
+
+                            <a
+                                id="profileLink"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                class="text-cyan-300 hover:text-cyan-200 transition"
+                            >
+                                View GitHub →
+                            </a>
+
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+
+
+            <!-- ANALYSIS NOTICE -->
+            <div class="glass rounded-2xl p-4 mb-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-cyan-400/10">
+
+                <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 rounded-xl bg-cyan-400/10 text-cyan-300 flex items-center justify-center">
+                        ✓
+                    </div>
+
+                    <div>
+                        <p class="text-sm font-semibold">Repository analysis complete</p>
+                        <p id="analysisText" class="text-xs text-slate-500 mt-1"></p>
+                    </div>
+                </div>
+
+                <span class="text-xs px-3 py-2 rounded-xl bg-violet-500/10 text-violet-300 border border-violet-500/10">
+                    Maximum: 500 repositories
+                </span>
+
+            </div>
+
+
+            <!-- STAT CARDS -->
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-5">
+
+                <div class="glass glass-hover rounded-2xl p-5">
+                    <div class="flex justify-between items-start mb-5">
+                        <div class="w-10 h-10 rounded-xl bg-violet-500/10 text-violet-300 flex items-center justify-center">
+                            ◈
+                        </div>
+                        <span class="text-xs text-slate-600">PROFILE</span>
+                    </div>
+
+                    <p class="text-slate-500 text-xs mb-1">Public Repositories</p>
+                    <p id="repos" class="stat-number text-3xl font-black"></p>
+                </div>
+
+
+                <div class="glass glass-hover rounded-2xl p-5">
+                    <div class="flex justify-between items-start mb-5">
+                        <div class="w-10 h-10 rounded-xl bg-yellow-400/10 text-yellow-300 flex items-center justify-center">
+                            ★
+                        </div>
+                        <span class="text-xs text-slate-600">TOTAL</span>
+                    </div>
+
+                    <p class="text-slate-500 text-xs mb-1">Total Stars</p>
+                    <p id="stars" class="stat-number text-3xl font-black"></p>
+                </div>
+
+
+                <div class="glass glass-hover rounded-2xl p-5">
+                    <div class="flex justify-between items-start mb-5">
+                        <div class="w-10 h-10 rounded-xl bg-cyan-400/10 text-cyan-300 flex items-center justify-center">
+                            ♟
+                        </div>
+                        <span class="text-xs text-slate-600">NETWORK</span>
+                    </div>
+
+                    <p class="text-slate-500 text-xs mb-1">Followers</p>
+                    <p id="followers" class="stat-number text-3xl font-black"></p>
+                </div>
+
+
+                <div class="glass glass-hover rounded-2xl p-5">
+                    <div class="flex justify-between items-start mb-5">
+                        <div class="w-10 h-10 rounded-xl bg-pink-400/10 text-pink-300 flex items-center justify-center">
+                            ↗
+                        </div>
+                        <span class="text-xs text-slate-600">NETWORK</span>
+                    </div>
+
+                    <p class="text-slate-500 text-xs mb-1">Following</p>
+                    <p id="following" class="stat-number text-3xl font-black"></p>
+                </div>
+
+            </div>
+
+
+            <!-- ANALYTICS -->
+            <div class="grid lg:grid-cols-3 gap-5 mb-5">
+
+                <!-- PROFILE METRICS -->
+                <div class="lg:col-span-2 glass rounded-3xl p-6">
+
+                    <div class="flex items-center justify-between mb-6">
+                        <div>
+                            <h3 class="font-bold text-lg">Profile Overview</h3>
+                            <p class="text-xs text-slate-500 mt-1">
+                                Public GitHub account metrics
+                            </p>
+                        </div>
+
+                        <div class="w-10 h-10 rounded-xl bg-indigo-500/10 text-indigo-300 flex items-center justify-center">
+                            ✦
+                        </div>
+                    </div>
+
+                    <div class="grid sm:grid-cols-3 gap-4">
+
+                        <div class="bg-slate-950/50 border border-white/5 rounded-2xl p-4">
+                            <p class="text-xs text-slate-500">Account Created</p>
+                            <p id="created" class="font-bold mt-2"></p>
+                        </div>
+
+                        <div class="bg-slate-950/50 border border-white/5 rounded-2xl p-4">
+                            <p class="text-xs text-slate-500">Public Gists</p>
+                            <p id="gists" class="font-bold mt-2"></p>
+                        </div>
+
+                        <div class="bg-slate-950/50 border border-white/5 rounded-2xl p-4">
+                            <p class="text-xs text-slate-500">Account Type</p>
+                            <p id="accountType" class="font-bold mt-2"></p>
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- REPOSITORY LIMIT -->
+                <div class="glass rounded-3xl p-6">
+
+                    <div class="flex items-center justify-between mb-5">
+                        <div>
+                            <h3 class="font-bold">Analysis Capacity</h3>
+                            <p class="text-xs text-slate-500 mt-1">Repository coverage</p>
+                        </div>
+
+                        <div class="text-cyan-300 font-bold">500</div>
+                    </div>
+
+                    <div class="progress-track rounded-full h-3 overflow-hidden mb-4">
+                        <div
+                            id="analysisProgress"
+                            class="progress-bar h-full rounded-full bg-gradient-to-r from-violet-500 via-cyan-400 to-pink-400"
+                            style="width: 0%"
+                        ></div>
+                    </div>
+
+                    <div class="flex justify-between text-xs">
+                        <span id="analyzedCount" class="text-slate-400">0 analyzed</span>
+                        <span class="text-slate-600">500 max</span>
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- REPOSITORIES -->
+            <div class="glass rounded-3xl p-6">
+
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+
+                    <div>
+                        <h3 class="text-xl font-bold">Repository Snapshot</h3>
+                        <p class="text-xs text-slate-500 mt-1">
+                            Latest repositories from the analyzed dataset
+                        </p>
+                    </div>
+
+                    <div class="flex items-center gap-2 text-xs text-slate-500">
+                        <span class="w-2 h-2 bg-cyan-400 rounded-full"></span>
+                        Up to 500 repositories
+                    </div>
+
+                </div>
+
+                <div
+                    id="repoList"
+                    class="grid md:grid-cols-2 xl:grid-cols-3 gap-4"
+                ></div>
+
+                <div id="noRepos" class="hidden text-center py-12">
+                    <div class="text-4xl mb-3">📦</div>
+                    <p class="font-semibold">No public repositories</p>
+                    <p class="text-sm text-slate-500 mt-1">
+                        This profile doesn't have any public repositories.
+                    </p>
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- FOOTER -->
+        <footer class="text-center mt-12 pb-4">
+            <p class="text-xs text-slate-600">
+                GitScope • GitHub Profile Analyzer
+            </p>
+            <p class="text-[11px] text-slate-700 mt-1">
+                Data retrieved from the public GitHub API
+            </p>
+        </footer>
+
+    </main>
+
+
+    <script>
+
+        const MAX_REPOSITORIES = 500;
+        const PER_PAGE = 100;
+        const MAX_PAGES = MAX_REPOSITORIES / PER_PAGE;
+
+
+        function formatNumber(number) {
+            return new Intl.NumberFormat("en-US").format(number || 0);
+        }
+
+
+        function formatDate(dateString) {
+            if (!dateString) return "Unknown";
+
+            return new Date(dateString).toLocaleDateString(
+                "en-US",
+                {
+                    month: "short",
+                    year: "numeric"
+                }
+            );
+        }
+
+
+        function setLoading(isLoading) {
+
+            const button = document.getElementById("analyzeBtn");
+            const text = document.getElementById("buttonText");
+            const loader = document.getElementById("buttonLoader");
+
+            if (isLoading) {
+
+                button.disabled = true;
+                button.classList.add("opacity-70", "cursor-not-allowed");
+
+                text.textContent = "Analyzing...";
+                loader.classList.remove("hidden");
+
+            } else {
+
+                button.disabled = false;
+                button.classList.remove("opacity-70", "cursor-not-allowed");
+
+                text.textContent = "Analyze";
+                loader.classList.add("hidden");
+            }
+        }
+
+
+        function showError(message) {
+
+            const errorEl = document.getElementById("error");
+            const errorText = document.getElementById("errorText");
+
+            errorText.textContent = message;
+
+            errorEl.classList.remove("hidden");
+        }
+
+
+        function hideError() {
+
+            document.getElementById("error").classList.add("hidden");
+        }
+
+
+        function hideResult() {
+
+            document.getElementById("result").classList.add("hidden");
+        }
+
+
+        function showLoading() {
+
+            document.getElementById("loading").classList.remove("hidden");
+        }
+
+
+        function hideLoading() {
+
+            document.getElementById("loading").classList.add("hidden");
+        }
+
+
+        /*
+         * Fetch up to 500 repositories.
+         *
+         * GitHub allows a maximum of 100 repositories
+         * per API request, so we request up to 5 pages.
+         */
+        async function fetchRepositories(username) {
+
+            const repositories = [];
+
+            for (let page = 1; page <= MAX_PAGES; page++) {
+
+                const url =
+                    `https://api.github.com/users/${encodeURIComponent(username)}/repos` +
+                    `?per_page=${PER_PAGE}&page=${page}&sort=updated`;
+
+                const response = await fetch(url);
+
+                if (!response.ok) {
+
+                    if (response.status === 403 || response.status === 429) {
+                        throw new Error(
+                            "GitHub API rate limit reached. Please wait a while and try again."
+                        );
+                    }
+
+                    throw new Error(
+                        `Unable to fetch repositories (HTTP ${response.status}).`
+                    );
+                }
+
+                const data = await response.json();
+
+                if (!Array.isArray(data) || data.length === 0) {
+                    break;
+                }
+
+                repositories.push(...data);
+
+                /*
+                 * If fewer than 100 repositories were returned,
+                 * GitHub has no more repositories for this user.
+                 */
+                if (data.length < PER_PAGE) {
+                    break;
+                }
+
+                /*
+                 * Stop after reaching 500.
+                 */
+                if (repositories.length >= MAX_REPOSITORIES) {
+                    break;
+                }
+            }
+
+            return repositories.slice(0, MAX_REPOSITORIES);
+        }
+
+
+        function renderRepositories(repositories) {
+
+            const repoList = document.getElementById("repoList");
+            const noRepos = document.getElementById("noRepos");
+
+            repoList.innerHTML = "";
+
+            if (!repositories.length) {
+
+                noRepos.classList.remove("hidden");
+                return;
+            }
+
+            noRepos.classList.add("hidden");
+
+            /*
+             * Show the most recently updated 12 repositories
+             * in the visual snapshot.
+             *
+             * All fetched repositories are still used for
+             * statistics such as total stars.
+             */
+            const visibleRepositories =
+                repositories
+                    .slice()
+                    .sort(
+                        (a, b) =>
+                            new Date(b.updated_at) -
+                            new Date(a.updated_at)
+                    )
+                    .slice(0, 12);
+
+
+            visibleRepositories.forEach((repo, index) => {
+
+                const card = document.createElement("a");
+
+                card.href = repo.html_url;
+                card.target = "_blank";
+                card.rel = "noopener noreferrer";
+
+                card.className =
+                    "repo-card block rounded-2xl border border-white/5 bg-slate-950/40 p-5 animate-fade-up";
+
+                card.style.animationDelay = `${index * 50}ms`;
+
+
+                const language =
+                    repo.language ||
+                    "No language";
+
+
+                card.innerHTML = `
+
+                    <div class="flex items-start justify-between gap-3">
+
+                        <div class="min-w-0">
+
+                            <div class="flex items-center gap-2">
+
+                                <svg
+                                    width="17"
+                                    height="17"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    stroke-width="1.8"
+                                    class="text-slate-500 shrink-0"
+                                >
+                                    <path d="M3 3h18v18H3z"></path>
+                                    <path d="M8 8h8v8H8z"></path>
+                                </svg>
+
+                                <h4 class="font-bold truncate text-sm">
+                                    ${escapeHtml(repo.name)}
+                                </h4>
+
+                            </div>
+
+                        </div>
+
+                        ${
+                            repo.private
+                                ? `<span class="text-[10px] px-2 py-1 rounded-full bg-slate-700/40 text-slate-400">Private</span>`
+                                : `<span class="text-[10px] px-2 py-1 rounded-full bg-emerald-400/10 text-emerald-300">Public</span>`
+                        }
+
+                    </div>
+
+
+                    <p class="text-xs text-slate-500 mt-3 line-clamp-2 min-h-[32px]">
+                        ${escapeHtml(
+                            repo.description ||
+                            "No repository description available."
+                        )}
+                    </p>
+
+
+                    <div class="flex flex-wrap items-center gap-3 mt-5 text-[11px] text-slate-500">
+
+                        <span class="flex items-center gap-1">
+                            <span class="text-yellow-300">★</span>
+                            ${formatNumber(repo.stargazers_count)}
+                        </span>
+
+                        <span class="flex items-center gap-1">
+                            <span class="text-cyan-300">⑂</span>
+                            ${formatNumber(repo.forks_count)}
+                        </span>
+
+                        <span class="flex items-center gap-1">
+                            <span class="text-violet-300">●</span>
+                            ${escapeHtml(language)}
+                        </span>
+
+                    </div>
+
+
+                    <div class="mt-4 pt-4 border-t border-white/5 text-[11px] text-slate-600">
+                        Updated ${formatDate(repo.updated_at)}
+                    </div>
+                `;
+
+                repoList.appendChild(card);
+            });
+        }
+
+
+        function escapeHtml(value) {
+
+            return String(value)
+                .replaceAll("&", "&amp;")
+                .replaceAll("<", "&lt;")
+                .replaceAll(">", "&gt;")
+                .replaceAll('"', "&quot;")
+                .replaceAll("'", "&#039;");
+        }
+
+
+        async function analyzeProfile() {
+
+            const usernameInput =
+                document.getElementById("username");
+
+            const username =
+                usernameInput.value.trim();
+
+
+            hideError();
+            hideResult();
+
+
+            if (!username) {
+
+                showError(
+                    "Please enter a GitHub username."
+                );
+
+                usernameInput.focus();
+
+                return;
+            }
+
+
+            /*
+             * Basic username validation.
+             */
+            if (!/^[a-zA-Z0-9-]{1,39}$/.test(username)) {
+
+                showError(
+                    "Please enter a valid GitHub username."
+                );
+
+                usernameInput.focus();
+
+                return;
+            }
+
+
+            setLoading(true);
+            showLoading();
+
+
+            try {
+
+                /*
+                 * Fetch profile.
+                 */
+                const userResponse =
+                    await fetch(
+                        `https://api.github.com/users/${encodeURIComponent(username)}`
+                    );
+
+
+                if (!userResponse.ok) {
+
+                    if (userResponse.status === 404) {
+                        throw new Error(
+                            "GitHub user not found. Please check the username."
+                        );
+                    }
+
+                    if (
+                        userResponse.status === 403 ||
+                        userResponse.status === 429
+                    ) {
+                        throw new Error(
+                            "GitHub API rate limit reached. Please try again later."
+                        );
+                    }
+
+                    throw new Error(
+                        `Unable to fetch profile (HTTP ${userResponse.status}).`
+                    );
+                }
+
+
+                const userData =
+                    await userResponse.json();
+
+
+                /*
+                 * Fetch up to 500 repositories.
+                 */
+                const repositories =
+                    await fetchRepositories(username);
+
+
+                /*
+                 * Calculate total stars across
+                 * ALL analyzed repositories.
+                 */
+                const totalStars =
+                    repositories.reduce(
+                        (total, repo) =>
+                            total +
+                            Number(repo.stargazers_count || 0),
+                        0
+                    );
+
+
+                /*
+                 * Update profile.
+                 */
+                document.getElementById("avatar").src =
+                    userData.avatar_url;
+
+                document.getElementById("name").textContent =
+                    userData.name ||
+                    userData.login;
+
+                document.getElementById("handle").textContent =
+                    `@${userData.login}`;
+
+                document.getElementById("bio").textContent =
+                    userData.bio ||
+                    "No public bio available.";
+
+
+                /*
+                 * Profile statistics.
+                 */
+                document.getElementById("repos").textContent =
+                    formatNumber(userData.public_repos);
+
+                document.getElementById("stars").textContent =
+                    formatNumber(totalStars);
+
+                document.getElementById("followers").textContent =
+                    formatNumber(userData.followers);
+
+                document.getElementById("following").textContent =
+                    formatNumber(userData.following);
+
+
+                /*
+                 * Additional information.
+                 */
+                document.getElementById("created").textContent =
+                    formatDate(userData.created_at);
+
+                document.getElementById("gists").textContent =
+                    formatNumber(userData.public_gists);
+
+                document.getElementById("accountType").textContent =
+                    userData.type || "User";
+
+
+                /*
+                 * Optional location.
+                 */
+                const location =
+                    document.getElementById("location");
+
+                if (userData.location) {
+
+                    location.innerHTML =
+                        `📍 ${escapeHtml(userData.location)}`;
+
+                    location.classList.remove("hidden");
+
+                } else {
+
+                    location.classList.add("hidden");
+                }
+
+
+                /*
+                 * Optional company.
+                 */
+                const company =
+                    document.getElementById("company");
+
+                if (userData.company) {
+
+                    company.innerHTML =
+                        `🏢 ${escapeHtml(userData.company)}`;
+
+                    company.classList.remove("hidden");
+
+                } else {
+
+                    company.classList.add("hidden");
+                }
+
+
+                /*
+                 * GitHub profile link.
+                 */
+                document.getElementById("profileLink").href =
+                    userData.html_url;
+
+
+                /*
+                 * Repository analysis information.
+                 */
+                const analyzed =
+                    repositories.length;
+
+                const totalPublic =
+                    Number(userData.public_repos || 0);
+
+
+                document.getElementById("analysisText").textContent =
+                    `Analyzed ${formatNumber(analyzed)} of ${formatNumber(totalPublic)} public repositories.`;
+
+
+                document.getElementById("analyzedCount").textContent =
+                    `${formatNumber(analyzed)} analyzed`;
+
+
+                /*
+                 * Progress represents the maximum
+                 * 500-repository analysis capacity.
+                 */
+                const progress =
+                    Math.min(
+                        (analyzed / MAX_REPOSITORIES) * 100,
+                        100
+                    );
+
+
+                document.getElementById("analysisProgress")
+                    .style.width = `${progress}%`;
+
+
+                /*
+                 * Render repository snapshot.
+                 */
+                renderRepositories(repositories);
+
+
+                /*
+                 * Show result.
+                 */
+                hideLoading();
+
+                document.getElementById("result")
+                    .classList.remove("hidden");
+
+
+                /*
+                 * Smoothly move user to results.
+                 */
+                setTimeout(() => {
+
+                    document.getElementById("result")
+                        .scrollIntoView({
+                            behavior: "smooth",
+                            block: "start"
+                        });
+
+                }, 100);
+
+
+            } catch (error) {
+
+                hideLoading();
+
+                showError(
+                    error.message ||
+                    "Something went wrong while analyzing the profile."
+                );
+
+            } finally {
+
+                setLoading(false);
+            }
+        }
+
+    </script>
+
+</body>
+</html>
